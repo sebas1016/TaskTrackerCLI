@@ -2,7 +2,7 @@
   "profiles": {
     "TaskTrackerCLI": {
       "commandName": "Project",
-      "commandLineArgs": "\r\nadd \"Comprar comida\""
+      "commandLineArgs": "\r\nlist \"Prueba de Id\""
     }
   }
 }

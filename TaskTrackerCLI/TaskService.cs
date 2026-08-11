@@ -12,12 +12,13 @@ namespace TaskTrackerCLI
         private TaskRepository repository = new TaskRepository();
 
         public TaskService()
-        { 
+        {
             tasks = repository.Load();
             if (tasks.Count == 0)
             {
                 nextId = 1;
-            }else
+            }
+            else
             {
                 nextId = tasks.Max(t => t.Id) + 1;
             }
@@ -34,6 +35,31 @@ namespace TaskTrackerCLI
             return task;
         }
 
-     
+        public IReadOnlyList<Task> GetTasks()
+        {
+            IReadOnlyList<Task> tasklist = tasks.AsReadOnly();
+
+            return tasklist;
+            //Tambien se puede hacer de la siguiente manera:
+            //return tasks.AsReadOnly();
+        }
+
+        public Task? DeleteTask(int id)
+        {
+            Task? task = tasks.FirstOrDefault(t => t.Id == id);
+            if (task != null)
+            {
+                tasks.Remove(task);
+                repository.Save(tasks);
+                return task;
+
+            }
+            else
+            {
+                return null;
+
+            }
+
+        }
     }
 }

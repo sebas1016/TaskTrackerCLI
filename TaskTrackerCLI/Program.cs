@@ -33,18 +33,47 @@
                     break;
 
                 case "list":
-                    Console.WriteLine("List command executed.");
+                    var taskList = service.GetTasks();
+                    if (taskList.Count == 0)
+                    {
+                        Console.WriteLine("No hay tareas aún");
+                    }
+                    else
+                    {
+                        foreach (var task in taskList)
+                        {
+                            Console.WriteLine(task.ToString());
+                        }
+                    }
                     break;
 
                 case "delete":
                     if (args.Length == 2)
                     {
                         string taskId = args[1];
-                        Console.WriteLine($"Task ID to delete: {taskId}");
+                        if (int.TryParse(taskId, out int id))
+                        {
+                            Task? task = service.DeleteTask(id);
+                            if(task != null)
+                            {
+                                Console.WriteLine($"Task eliminada con exito {task}");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"La tarea con id: {id} no fue encontrada");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid task ID provided for deletion.");
+                            Environment.Exit(1);
+                        }
+                        
 
                     }
                     else
                     {
+                     
                         Console.WriteLine("No task ID provided for deletion.");
                         Environment.Exit(1);
                     }
@@ -56,5 +85,7 @@
                     break;
             }
         }
+
+        
     }
 }

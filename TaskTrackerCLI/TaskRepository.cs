@@ -19,7 +19,7 @@ namespace TaskTrackerCLI
             }
             
             string jsonString = File.ReadAllText(FilePath);
-            List<Task> tasks = JsonSerializer.Deserialize<List<Task>>(jsonString);
+            List<Task> tasks = JsonSerializer.Deserialize<List<Task>>(jsonString)!;
             if (tasks == null)
             {
                 return new List<Task>();
