@@ -4,7 +4,7 @@
     {
         private static void Main(string[] args)
         {
-            
+           
 
             if (args.Length == 0)
             {
@@ -15,6 +15,7 @@
             string comand = args[0];
             Console.WriteLine($"Comando: {comand}");
 
+           
             switch (comand.ToLower())
             {
                 case "add":
@@ -85,7 +86,13 @@
                     break;
             }
         }
-
-        
+        public void PrintHelp()
+        {
+            Console.WriteLine("Task Tracker CLI");
+            Console.WriteLine("Usage:");
+            Console.WriteLine("  add <description>   - Add a new task with the given description.");
+            Console.WriteLine("  list                - List all tasks.");
+            Console.WriteLine("  delete <taskId>     - Delete the task with the specified ID.");
+        }
     }
 }

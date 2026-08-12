@@ -36,5 +36,11 @@ namespace TaskTrackerCLI
             File.WriteAllText(FilePath, jsonString);
 
         }
+
+        public void Save(int nextId)
+        {
+            string jsonString = JsonSerializer.Serialize(nextId);
+            File.WriteAllText(FilePath, jsonString);
+        }
     }
 }
