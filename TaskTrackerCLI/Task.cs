@@ -27,7 +27,19 @@ namespace TaskTrackerCLI
             CreatedAt = DateTime.Now;
             UpdatedAt = CreatedAt;
         }
-
+        
+        public bool UpdateDescription(string newDescription)
+        {
+           if(string.IsNullOrWhiteSpace(newDescription))
+           {
+                return false;
+           }
+           
+           Description = newDescription;
+           UpdatedAt = DateTime.Now;
+           return true;
+                   
+        }
         public override string ToString()
         {
             return $"\nID: {Id}" +

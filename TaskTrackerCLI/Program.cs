@@ -79,6 +79,44 @@
                         Environment.Exit(1);
                     }
                     break;
+                case "update":
+
+                    if (args.Length == 3)
+                    {
+
+                        string taskId = args[1]; 
+
+                        if (int.TryParse(taskId, out int id)) 
+                        {
+
+                            Task? task = service.UpdateTask(id, args[2]); 
+
+                            if (task == null) 
+                            { 
+
+                                Console.WriteLine("Datos no validos, verifique Id o Descripcion");
+                            } 
+
+                            else 
+                            { 
+
+                                Console.WriteLine($"Tarea actualizada con exito: {task}"); 
+
+                            }
+
+                        }
+                        else
+                        {
+                            Console.Write("El id debe de ser un número entero");
+                        }
+                         
+                    }
+                    else
+                    {
+                        Console.WriteLine("Hace falta uno o mas argumentos");
+                    }
+
+                    break;
 
                 default:
                     Console.WriteLine($"Unknown command: {comand}");

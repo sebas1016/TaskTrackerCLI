@@ -8,21 +8,22 @@ namespace TaskTrackerCLI
     internal class TaskRepository
     {
         private const string FilePath = "tasks.json"; 
-        public List<Task> Load()
+
+        public TaskData Load()
         {
             if (!File.Exists(FilePath))
             {
-                string JsonString = "[]";
-                File.WriteAllText(FilePath, JsonString);
+                TaskData data = new TaskData();
+                File.WriteAllText(FilePath, JsonSerializer.Serialize(data));
 
-                return new List<Task>();
+                return data;
             }
             
             string jsonString = File.ReadAllText(FilePath);
-            List<Task> tasks = JsonSerializer.Deserialize<List<Task>>(jsonString)!;
+            TaskData tasks = JsonSerializer.Deserialize<TaskData>(jsonString)!;
             if (tasks == null)
             {
-                return new List<Task>();
+                return new TaskData();
             } else
             {
                 return tasks;
@@ -30,17 +31,12 @@ namespace TaskTrackerCLI
 
         }
 
-        public void Save(List<Task> tasks)
+        public void Save(TaskData data)
         {
-            string jsonString = JsonSerializer.Serialize(tasks);
+            string jsonString = JsonSerializer.Serialize(data);
             File.WriteAllText(FilePath, jsonString);
 
-        }
-
-        public void Save(int nextId)
-        {
-            string jsonString = JsonSerializer.Serialize(nextId);
-            File.WriteAllText(FilePath, jsonString);
-        }
+        }  
+        
     }
 }
