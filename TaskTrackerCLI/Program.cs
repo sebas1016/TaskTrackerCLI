@@ -1,4 +1,8 @@
-﻿namespace TaskTrackerCLI
+﻿using System.Collections.Specialized;
+using System.Data.Common;
+using System.Net.NetworkInformation;
+
+namespace TaskTrackerCLI
 {
     internal class Program
     {
@@ -34,18 +38,36 @@
                     break;
 
                 case "list":
-                    var taskList = service.GetTasks();
-                    if (taskList.Count == 0)
+                    if (args.Length == 2)
                     {
-                        Console.WriteLine("No hay tareas aún");
+                        string status = args[1];
+                        
+                        var parseStatus = ParseStatus(status);
+                        if (parseStatus != null)
+                        {
+                            var taskList = service.GetTasks(parseStatus);
+                            PrintTasks(taskList);
+                        } 
+                        else
+                        {
+                            Console.WriteLine("Estado no valido. es de la forma: " +
+                                "\nTodo" +
+                                "\nIn-progress" +
+                                "\nDone");
+                        }
+                        
+                        
+                    } 
+                    else if (args.Length == 1)
+                    {
+                        var taskList = service.GetTasks(null);
+                        PrintTasks(taskList);
                     }
                     else
                     {
-                        foreach (var task in taskList)
-                        {
-                            Console.WriteLine(task.ToString());
-                        }
+                        Console.WriteLine("Comando no valido");
                     }
+                    
                     break;
 
                 case "delete":
@@ -117,12 +139,69 @@
                     }
 
                     break;
-
+                case "status":
+                    if (args.Length == 3)
+                    {
+                        string taskId = args[1];
+                        if(int.TryParse(taskId, out int id))
+                        {
+                            Task? task = service.UpdateStatus(id, args[2]);
+                            if (task == null)
+                            {
+                                Console.WriteLine($"No se encontro tarea con el Id {id} ó el estado {args[2]}. No es valido");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Se actualizo el estatdo con exito: {task}");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("El Id debe ser un número entero");
+                        }
+                    } else
+                    {
+                        Console.WriteLine("Argumentos insuficientes. Es de la forma command id new status");
+                    }
+                    break;
                 default:
                     Console.WriteLine($"Unknown command: {comand}");
                     Environment.Exit(1);
                     break;
             }
+        }
+
+        private static TaskStatus? ParseStatus(string status)
+        {
+            switch (status.ToLower())
+            {
+                case "todo":
+                    return TaskStatus.Todo;
+
+                case "in-progress":
+                    return TaskStatus.InProgress;
+
+                case "done":
+                    return TaskStatus.Done;
+
+                default:
+                    return null;
+            }
+        }
+
+        private static void PrintTasks(IReadOnlyList<Task> tasksList)
+        {
+            if (tasksList.Count == 0)
+            {
+                Console.WriteLine("No hay tareas aún");
+                return;
+            }
+            
+            foreach (var task in tasksList)
+            {
+                Console.WriteLine(task);
+            }
+            
         }
         public void PrintHelp()
         {

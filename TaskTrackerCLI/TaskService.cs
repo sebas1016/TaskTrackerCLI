@@ -2,50 +2,54 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Globalization;
 
 namespace TaskTrackerCLI
 {
     internal class TaskService
     {
-        private List<Task> tasks = new List<Task>();
-        private int nextId = 1;
+        
         private TaskRepository repository = new TaskRepository();
         private TaskData data;
 
         public TaskService()
         { 
             data = repository.Load();
-            tasks = data.Tasks;
-            nextId = data.NextId;
+            
         }
 
         public Task AddTask(string description)
         {
             
-            Task task = new Task(nextId, description);
-            tasks.Add(task);
-            nextId++;
-            data.NextId = nextId;
+            Task task = new Task(data.NextId, description);
+            data.Tasks.Add(task);
+            data.NextId++;
             repository.Save(data);
             
             return task;
         }
 
-        public IReadOnlyList<Task> GetTasks()
+        public IReadOnlyList<Task> GetTasks(TaskStatus? status)
         {
-            IReadOnlyList<Task> tasklist = tasks.AsReadOnly();
+            if (status == null)
+            {
+                return data.Tasks.AsReadOnly();
+            }else
+            {
+                return data.Tasks
+                    .Where(t => t.Status == status)
+                    .ToList()
+                    .AsReadOnly();
+            }
 
-            return tasklist;
-            //Tambien se puede hacer de la siguiente manera:
-            //return tasks.AsReadOnly();
         }
 
         public Task? DeleteTask(int id)
         {
-            Task? task = tasks.FirstOrDefault(t => t.Id == id);
+            Task? task = data.Tasks.FirstOrDefault(t => t.Id == id);
             if (task != null)
             {
-                tasks.Remove(task);
+                data.Tasks.Remove(task);
                 repository.Save(data);
                 return task;
 
@@ -60,7 +64,7 @@ namespace TaskTrackerCLI
 
         public Task? UpdateTask(int id, string newDescription)
         {
-            Task? task = tasks.FirstOrDefault(t => t.Id == id);
+            Task? task = data.Tasks.FirstOrDefault(t => t.Id == id);
             if (task == null)
             {
                 return null;
@@ -75,5 +79,44 @@ namespace TaskTrackerCLI
             return task;
 
         }
+
+        public Task? UpdateStatus(int id, string status)
+        {
+            Task? task = data.Tasks.FirstOrDefault(t => t.Id == id);
+            
+
+            if (task == null)
+            {
+                return null;
+            }
+            if (string.IsNullOrWhiteSpace(status)) 
+            {
+                return null;
+            }
+            TaskStatus newStatus;
+            switch (status.ToLower())
+            {
+                case "todo":
+
+                    newStatus = TaskStatus.Todo;
+                    break;
+                
+                case "in-progress":
+                    newStatus = TaskStatus.InProgress;
+                    break;
+                case "done":
+                    newStatus = TaskStatus.Done;
+                    break;
+                default:
+                    
+                    return null;
+            }
+            task.UpdateStatus(newStatus);
+            repository.Save(data);
+            return task;
+            
+        }
+
+       
     }
 }

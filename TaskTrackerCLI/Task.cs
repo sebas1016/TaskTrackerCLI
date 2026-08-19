@@ -2,16 +2,24 @@
 
 namespace TaskTrackerCLI
 {
+    public enum TaskStatus
+    {
+        Todo,
+        InProgress,
+        Done
+    }
     internal class Task
     {
+        
         public int Id { get; }
         public string Description { get; private set; }
-        public string Status { get; private set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public TaskStatus Status { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime UpdatedAt { get; private set; }
 
         [JsonConstructor]
-        public Task(int id, string description, string status, DateTime createdAt, DateTime updatedAt)
+        public Task(int id, string description, TaskStatus status, DateTime createdAt, DateTime updatedAt)
         {
             Id = id;
             Description = description;
@@ -23,7 +31,7 @@ namespace TaskTrackerCLI
         {
             Id = id;
             Description = description;
-            Status = "todo";
+            Status = TaskStatus.Todo;
             CreatedAt = DateTime.Now;
             UpdatedAt = CreatedAt;
         }
@@ -39,6 +47,13 @@ namespace TaskTrackerCLI
            UpdatedAt = DateTime.Now;
            return true;
                    
+        }
+
+        public bool UpdateStatus(TaskStatus status)
+        {
+            Status = status;
+            UpdatedAt = DateTime.Now;
+            return true;
         }
         public override string ToString()
         {
